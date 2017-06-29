@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# geckodriver log
+geckodriver.log
+
+# csv files
+*.csv
