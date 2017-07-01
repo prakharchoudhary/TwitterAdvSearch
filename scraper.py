@@ -5,7 +5,7 @@ import time
 from csv import DictWriter
 import pprint
 import datetime
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,8 +18,10 @@ def init_driver():
 	return driver
 
 def scroll(driver, start_date, end_date):
-	driver.get("https://twitter.com/search?l=en&q=DJIA%2C%20OR%20Apple%2C%20OR%20Microsoft%2C%20OR%20stock%2C%20OR%203M%2C%20OR%20McDonals%2C%20OR%20AmericanExpress%2C%20OR%20Intel%2C%20OR%20Cisco%20since%3A{}%20until%3A{}&src=typd&lang=en".format(start_date, end_date))
-	max_time = 120
+	url = "https://twitter.com/search?l=en&q=feel%20OR%20feels%20OR%20feeling%20OR%20felt%20since%3A{}%20until%3A{}&src=typd".format(start_date, end_date)
+	print(url)
+	driver.get(url)
+	max_time = 180
 	start_time = time.time()  # remember when we started
 	while (time.time() - start_time) < max_time:
 	    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -61,33 +63,26 @@ def scrape_tweets(driver):
 def make_csv(data, start_date):
 
 	l = len(data['date'])
-	print(l)
-	print(data['tweet'][0])
-	with open("data_%s.csv"%start_date, "a+") as file:
+	print("count: %d"%l)
+	with open("twitterData.csv", "a+") as file:
 		fieldnames = ['Date', 'Name', 'Tweets']
 		writer = DictWriter(file, fieldnames = fieldnames)
 		writer.writeheader()
 		for i in range(l):
-			print('{}\n{}\n{}\n\n\n'.format(data['date'][i],
-											data['name'][i],
-											data['tweet'][i]
-											))
 			writer.writerow({'Date': data['date'][i],
 							'Name': data['name'][i],
 							'Tweets': data['tweet'][i],
 							})
 def get_all_dates(start_date, end_date):
-	start_date = start_date.split('-')
-	start_date = date(int(start_date[0]), int(start_date[1]), int(start_date[2]))
-	end_date = end_date.split('-')
-	end_date = date(int(end_date[0]), int(end_date[1]), int(end_date[2]))
-	print("{} , {}".format(start_date, end_date))
-	delta = end_date - start_date         # timedelta
-	print(delta)
+	
 	dates = []
-	for i in range(delta.days + 1):
-	    dates.append(start_date + timedelta(days=i))
-	    print(dates)
+	start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+	end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+	step = timedelta(days=1)
+	while start_date <= end_date:
+		dates.append(str(start_date.date()))
+		start_date += step
+
 	return dates
 
 if __name__ == "__main__":
@@ -100,5 +95,5 @@ if __name__ == "__main__":
 		scroll(driver, str(all_dates[i]), str(all_dates[i+1]))
 		scrape_tweets(driver)
 		time.sleep(5)
-		print("The tweets are ready!")
-		driver.quit()
+		print("The tweets for {} are ready!".format(all_dates[i]))
+		driver.quit()	
