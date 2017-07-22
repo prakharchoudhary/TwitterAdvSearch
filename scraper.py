@@ -85,7 +85,9 @@ def get_all_dates(start_date, end_date):
 
 	return dates
 
-if __name__ == "__main__":
+def main():
+	wordsToSearch = input("Enter the words: ").split(',')
+	wordsToSearch = wordsToSearch.strip()
 	start_date = input("Enter the start date in (Y-M-D): ")
 	end_date = input("Enter the end date in (Y-M-D): ")
 	all_dates = get_all_dates(start_date, end_date)
@@ -97,3 +99,7 @@ if __name__ == "__main__":
 		time.sleep(5)
 		print("The tweets for {} are ready!".format(all_dates[i]))
 		driver.quit()	
+
+if __name__ == "__main__":
+
+	main()
