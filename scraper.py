@@ -22,13 +22,13 @@ def init_driver(driver_type):
 		driver = webdriver.Ie()
 	elif driver_type == 4:
 		driver = webdriver.Opera()
-	elif driver_type = 5:
+	elif driver_type == 5:
 		driver = webdriver.PhantomJS()
 	driver.wait = WebDriverWait(driver, 5)
 	return driver
 
 
-def scroll(driver, start_date, end_date, words):
+def scroll(driver, start_date, end_date, words, max_time=180):
 	url = "https://twitter.com/search?l=en&q="
 	for w in words[:-1]:
 		url += "{}%20OR".format(w)
@@ -36,7 +36,6 @@ def scroll(driver, start_date, end_date, words):
 	url += "since%3A{}%20until%3A{}&src=typd".format(start_date, end_date)
 	print(url)
 	driver.get(url)
-	max_time = 180
 	start_time = time.time()  # remember when we started
 	while (time.time() - start_time) < max_time:
 	    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -70,14 +69,14 @@ def scrape_tweets(driver):
 			"tweet": tweet_texts,
 		}
 
-		make_csv(data, start_date)
+		make_csv(data)
 
 	except Exception:
 		print("Whoops! Something went wrong!")
 		driver.quit()
 
 
-def make_csv(data, start_date):
+def make_csv(data):
 	l = len(data['date'])
 	print("count: %d"%l)
 	with open("twitterData.csv", "a+") as file:
