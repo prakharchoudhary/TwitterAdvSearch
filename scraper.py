@@ -18,6 +18,12 @@ def init_driver(driver_type):
 		driver = webdriver.Firefox()
 	elif driver_type == 2:
 		driver = webdriver.Chrome()
+	elif driver_type == 3:
+		driver = webdriver.Ie()
+	elif driver_type == 4:
+		driver = webdriver.Opera()
+	elif driver_type = 5:
+		driver = webdriver.PhantomJS()
 	driver.wait = WebDriverWait(driver, 5)
 	return driver
 
@@ -98,7 +104,7 @@ def get_all_dates(start_date, end_date):
 
 
 def main():
-	driver_type = int(input("1) Firefox | 2) Chrome\nEnter the driver you want to use: "))
+	driver_type = int(input("1) Firefox | 2) Chrome | 3) IE | 4) Opera | 5) PhantomJS\nEnter the driver you want to use: "))
 	wordsToSearch = input("Enter the words: ").split(',')
 	for w in wordsToSearch:
 		w = w.strip()
