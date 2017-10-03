@@ -35,7 +35,9 @@ def scroll(driver, start_date, end_date, words, lang, max_time=180):
 		url += "{}%20OR".format(w)
 	url += "{}%20".format(words[-1])
 	url += "since%3A{}%20until%3A{}&".format(start_date, end_date)
-	url += "l={}&src=typd".format(languages[lang])
+	if lang != 0:
+		url += "l={}&".format(languages[lang])
+	url += "src=typd"
 	print(url)
 	driver.get(url)
 	start_time = time.time()  # remember when we started
@@ -111,7 +113,7 @@ def main():
 		w = w.strip()
 	start_date = input("Enter the start date in (Y-M-D): ")
 	end_date = input("Enter the end date in (Y-M-D): ")
-	lang = int(input("1) English | 2) Italian | 3) Spanish | 4) French | 5) German | 6) Russian | 7) Chinese\nEnter the language you want to use: "))
+	lang = int(input("0) All Languages 1) English | 2) Italian | 3) Spanish | 4) French | 5) German | 6) Russian | 7) Chinese\nEnter the language you want to use: "))
 	all_dates = get_all_dates(start_date, end_date)
 	print(all_dates)
 	for i in range(len(all_dates) - 1):
