@@ -28,12 +28,16 @@ def init_driver(driver_type):
 	return driver
 
 
-def scroll(driver, start_date, end_date, words, max_time=180):
-	url = "https://twitter.com/search?l=en&q="
+def scroll(driver, start_date, end_date, words, lang, max_time=180):
+	languages = { 1: 'en', 2: 'it', 3: 'es', 4: 'fr', 5: 'de', 6: 'ru', 7: 'zh'}
+	url = "https://twitter.com/search?q="
 	for w in words[:-1]:
 		url += "{}%20OR".format(w)
 	url += "{}%20".format(words[-1])
-	url += "since%3A{}%20until%3A{}&src=typd".format(start_date, end_date)
+	url += "since%3A{}%20until%3A{}&".format(start_date, end_date)
+	if lang != 0:
+		url += "l={}&".format(languages[lang])
+	url += "src=typd"
 	print(url)
 	driver.get(url)
 	start_time = time.time()  # remember when we started
@@ -46,9 +50,9 @@ def scrape_tweets(driver):
 		tweet_divs = driver.page_source
 		obj = BeautifulSoup(tweet_divs, "html.parser")
 		content = obj.find_all("div", class_="content")
-		dates=[]
-		names=[]
-		tweet_texts=[]
+		dates = []
+		names = []
+		tweet_texts = []
 		for i in content:
 			date = (i.find_all("span", class_="_timestamp")[0].string).strip()
 			try:
@@ -56,7 +60,7 @@ def scrape_tweets(driver):
 			except AttributeError:
 				name = "Anonymous"
 
-			tweets = i.find("p", class_= "tweet-text").strings
+			tweets = i.find("p", class_="tweet-text").strings
 			tweet_text = "".join(tweets)
 			# hashtags = i.find_all("a", class_="twitter-hashtag")[0].string
 			dates.append(date)
@@ -78,10 +82,10 @@ def scrape_tweets(driver):
 
 def make_csv(data):
 	l = len(data['date'])
-	print("count: %d"%l)
+	print("count: %d" % l)
 	with open("twitterData.csv", "a+") as file:
 		fieldnames = ['Date', 'Name', 'Tweets']
-		writer = DictWriter(file, fieldnames = fieldnames)
+		writer = DictWriter(file, fieldnames=fieldnames)
 		writer.writeheader()
 		for i in range(l):
 			writer.writerow({'Date': data['date'][i],
@@ -109,11 +113,12 @@ def main():
 		w = w.strip()
 	start_date = input("Enter the start date in (Y-M-D): ")
 	end_date = input("Enter the end date in (Y-M-D): ")
+	lang = int(input("0) All Languages 1) English | 2) Italian | 3) Spanish | 4) French | 5) German | 6) Russian | 7) Chinese\nEnter the language you want to use: "))
 	all_dates = get_all_dates(start_date, end_date)
 	print(all_dates)
-	for i in range(len(all_dates)-1):
+	for i in range(len(all_dates) - 1):
 		driver = init_driver(driver_type)
-		scroll(driver, str(all_dates[i]), str(all_dates[i+1]), wordsToSearch)
+		scroll(driver, str(all_dates[i]), str(all_dates[i + 1]), wordsToSearch, lang)
 		scrape_tweets(driver)
 		time.sleep(5)
 		print("The tweets for {} are ready!".format(all_dates[i]))
